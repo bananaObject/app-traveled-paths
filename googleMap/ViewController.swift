@@ -9,11 +9,15 @@ import GoogleMaps
 import UIKit
 
 class ViewController: UIViewController {
+    // MARK: - Visual Components
+
     /// Map view.
     private lazy var mapView: GMSMapView = {
         let view = GMSMapView()
         return view
     }()
+
+    // MARK: - Private Properties
 
     /// All user movement coordinates.
     private lazy var moveCoordinates: [CLLocationCoordinate2D] = []
@@ -25,9 +29,10 @@ class ViewController: UIViewController {
     /// Past path line.
     private var route: GMSPolyline?
 
-
     /// Location manager.
     private var location: CLLocationManager?
+
+    // MARK: - Lifecycle
 
     override func loadView() {
         super.loadView()
@@ -40,6 +45,8 @@ class ViewController: UIViewController {
         configurePolyline()
         configureLocationManager()
     }
+
+    // MARK: - Setting UI Methods
 
     /// Configuration map view.
     private func configureMap() {
@@ -62,6 +69,8 @@ class ViewController: UIViewController {
         routePath = GMSMutablePath()
     }
 
+    // MARK: - Private Methods
+
     /// Creates marker on user locations.
     /// - Parameter coordinate: User coordinate.
     /// - Returns: Marker
@@ -78,7 +87,7 @@ class ViewController: UIViewController {
     }
 
     /// Update visable marks.
-    func updateVisableMarks() {
+    private func updateVisableMarks() {
         let region = mapView.projection.visibleRegion()
         let boundsVisable = GMSCoordinateBounds(region: region)
 
