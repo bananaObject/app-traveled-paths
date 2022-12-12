@@ -58,6 +58,10 @@ final class MapViewController: UIViewController {
 // MARK: - MapViewOutput
 
 extension MapViewController: MapViewOutput {
+    func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion) {
+        presenter?.viewUpdateVisableMarks(visableRegion)
+    }
+
     func viewDidLoadScreen() {
         presenter?.viewDidLoadScreen()
     }
@@ -68,10 +72,6 @@ extension MapViewController: MapViewOutput {
 
     func viewShowRoute(_ path: PathChoice) {
         presenter?.viewShowRoute(path)
-    }
-
-    func viewUpdateVisableMarks() {
-        presenter?.viewUpdateVisableMarks()
     }
 
     func viewMarkingRoute(_ on: Bool) {
@@ -121,6 +121,6 @@ extension MapViewController: MapViewInput {
 
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-        presenter?.viewUpdateVisableMarks()
+        presenter?.viewUpdateVisableMarks(mapView.projection.visibleRegion())
     }
 }

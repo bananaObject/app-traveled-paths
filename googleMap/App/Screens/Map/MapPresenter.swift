@@ -20,7 +20,8 @@ protocol MapViewOutput {
     /// View requested shows traveled Route.
     func viewShowRoute(_ route: PathChoice)
     /// View requested update visable marks
-    func viewUpdateVisableMarks()
+    /// - Parameter visableRegion: Visable region map.
+    func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion)
     /// View requested user location.
     func viewShowLocation()
     /// View shows the screen.
@@ -28,8 +29,6 @@ protocol MapViewOutput {
 }
 
 protocol MapViewInput: AnyObject {
-    ///  contains the four points defining the polygon that is visible in a map’s camera.
-    var visibleRegion: GMSVisibleRegion { get }
     /// Controls whether the My Location dot and accuracy circle is enabled. Defaults to false.
     var locationEnabled: Bool { get set }
     /// Creates location marker on map.
@@ -160,6 +159,34 @@ final class MapPresenter: NSObject {
 }
 
 extension MapPresenter: MapViewOutput {
+    func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion) {
+        guard isMarkingRoute else { return }
+        let boundsVisable = GMSCoordinateBounds(region: visableRegion)
+
+        var visableCoordinates = routeCoordinates.filter { coordinate in
+            return boundsVisable.contains(coordinate)
+        }
+
+        var newMark = visibleMarkers.filter { marker in
+            guard let index = visableCoordinates.firstIndex(where: { $0.longitude == marker.position.longitude
+                && $0.latitude == marker.position.latitude})
+            else {
+                marker.map = nil
+                return false
+            }
+
+            visableCoordinates.remove(at: index)
+            return true
+        }
+
+        visableCoordinates.forEach { coordinate in
+            guard let mark = viewInput?.createMarker(coordinate) else { return }
+            newMark.append(mark)
+        }
+
+        visibleMarkers = newMark
+    }
+
     func viewDidLoadScreen() {
         if let routesDb = routesDb, routesDb.isEmpty {
             viewInput?.setInfoPanel(firstLineText: "Добро пожаловать",
@@ -254,36 +281,6 @@ extension MapPresenter: MapViewOutput {
                                     nextButtonIsEnabled: buttons.next)
 
         }
-    }
-
-    func viewUpdateVisableMarks() {
-        guard isMarkingRoute else { return }
-        
-        guard let region = viewInput?.visibleRegion else { return }
-        let boundsVisable = GMSCoordinateBounds(region: region)
-
-        var visableCoordinates = routeCoordinates.filter { coordinate in
-            return boundsVisable.contains(coordinate)
-        }
-
-        var newMark = visibleMarkers.filter { marker in
-            guard let index = visableCoordinates.firstIndex(where: { $0.longitude == marker.position.longitude
-                && $0.latitude == marker.position.latitude})
-            else {
-                marker.map = nil
-                return false
-            }
-
-            visableCoordinates.remove(at: index)
-            return true
-        }
-
-        visableCoordinates.forEach { coordinate in
-            guard let mark = viewInput?.createMarker(coordinate) else { return }
-            newMark.append(mark)
-        }
-
-        visibleMarkers = newMark
     }
 }
 
