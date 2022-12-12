@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.setMetalRendererEnabled(true)
         GMSServices.provideAPIKey("AIzaSyBhgT3hAs_nddjnk8Fubv9ZyH2l0DfK5ng")
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = ViewController()
+        window?.rootViewController = AppModuleBuilder.appBuild()
         window?.makeKeyAndVisible()
         return true
     }
