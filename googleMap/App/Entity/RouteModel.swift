@@ -10,6 +10,7 @@ import RealmSwift
 
 final class RouteModel: Object {
     @Persisted(primaryKey: true) private(set) var id: ObjectId
+    @Persisted(originProperty: "routes") var owner: LinkingObjects<UserModel>
     @Persisted private(set) var date: Double = Date().timeIntervalSince1970
     @Persisted private(set) var locations: List<LocationModel>
 
@@ -18,7 +19,7 @@ final class RouteModel: Object {
     }
 
     var getDateString: String {
-        DateFormatterHelper.shared.convert(self.date)
+        DateFormatterHelper.shared.convertToString(self.date)
     }
 
     func addLocation(_ location: CLLocationCoordinate2D) {

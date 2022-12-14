@@ -12,10 +12,24 @@ import UIKit
 final class AppModuleBuilder {
     // MARK: - Static Methods
 
-    static func appBuild() -> UIViewController {
+    static func startScreen(coordinator: Coordinator) -> UIViewController {
+        return loginScreen(coordinator: coordinator)
+    }
+
+    static func mapScreen(user: UserModel, coordinator: Coordinator) -> UIViewController {
         let realm = RealmService()
-        let presenter = MapPresenter(realm)
+        let presenter = MapPresenter(realm, user: user)
         let viewController = MapViewController(presenter)
+        presenter.viewInput = viewController
+
+        return viewController
+    }
+
+    static func loginScreen(coordinator: Coordinator) -> UIViewController {
+        let realm = RealmService()
+        let auth = AuthService()
+        let presenter = LoginPresenter(realm, auth, coordinator)
+        let viewController = LoginViewController(presenter: presenter)
         presenter.viewInput = viewController
 
         return viewController

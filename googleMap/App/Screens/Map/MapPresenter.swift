@@ -62,7 +62,7 @@ final class MapPresenter: NSObject {
     // Routes from the database.
     private lazy var routesDb: Results<RouteModel>? = {
         do {
-            return try realm?.get(RouteModel.self)
+            return try realm.get(RouteModel.self).filter("ANY owner == %@", user)
         } catch {
             return nil
         }
@@ -94,13 +94,15 @@ final class MapPresenter: NSObject {
     private var locationManager: CLLocationManager?
 
     /// Service for working with the database.
-    private var realm: RealmServiceProtocol?
+    private var realm: RealmServiceProtocol
+    /// User.
+    private var user: UserModel
 
     // MARK: - Initialization
 
-    init(_ realm: RealmServiceProtocol) {
-        super.init()
+    init(_ realm: RealmServiceProtocol, user: UserModel) {
         self.realm = realm
+        self.user = user
     }
 
     // MARK: - Private Methods
@@ -118,7 +120,9 @@ final class MapPresenter: NSObject {
     /// Saving the route in the database.
     private  func saveRouteInDb(_ route: RouteModel) {
         do {
-            try realm?.set(route)
+            try realm.update {
+                user.addRoute(route)
+            }
         } catch {
             print(error)
         }
@@ -138,7 +142,7 @@ final class MapPresenter: NSObject {
                     deleteObjects.append(contentsOf: Array(route.locations))
                     deleteObjects.append(route)
                 }
-                try realm?.delete(deleteObjects)
+                try realm.delete(deleteObjects)
             }
         } catch {
             print(error)
