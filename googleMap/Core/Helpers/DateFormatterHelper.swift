@@ -7,8 +7,10 @@
 
 import Foundation
 
-class DateFormatterHelper {
+final class DateFormatterHelper {
     // MARK: - Private Properties
+
+    /// A formatter that converts between dates and their textual representations.
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss dd/MM/yyyy"
@@ -16,21 +18,27 @@ class DateFormatterHelper {
         return formatter
     }()
 
-    private var dateTextCache: [Double: String] = [:]
+    /// Dates cache.
+    private var datesTextCache: [Double: String] = [:]
 
     // MARK: - Static Properties
+
     static var shared = DateFormatterHelper()
 
     private init() {}
 
     // MARK: - Public Methods
-    func convert(_ date: Double) -> String {
-        if let dateResult = dateTextCache[date] {
+
+    /// Converts timeIntervalSince1970 to string.
+    /// - Parameter date: timeIntervalSince1970
+    /// - Returns: String like ""HH:mm:ss dd/MM/yyyyy"".
+    func convertToString(_ date: Double) -> String {
+        if let dateResult = datesTextCache[date] {
             return dateResult
         } else {
             let dateTime = Date(timeIntervalSince1970: date)
             let stringDate = dateFormatter.string(from: dateTime)
-            dateTextCache[date] = stringDate
+            datesTextCache[date] = stringDate
             return stringDate
         }
     }
