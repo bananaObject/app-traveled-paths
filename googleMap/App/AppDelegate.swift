@@ -14,9 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        GMSServices.setMetalRendererEnabled(true)
         GMSServices.provideAPIKey("AIzaSyBhgT3hAs_nddjnk8Fubv9ZyH2l0DfK5ng")
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = ViewController()
+        window?.rootViewController = AppModuleBuilder.appBuild()
         window?.makeKeyAndVisible()
         return true
     }
