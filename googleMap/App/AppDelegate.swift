@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         GMSServices.setMetalRendererEnabled(true)
         GMSServices.provideAPIKey("AIzaSyBhgT3hAs_nddjnk8Fubv9ZyH2l0DfK5ng")
-
         window = UIWindow(frame: UIScreen.main.bounds)
         self.appCoordinator = ApplicationCoordinator(window: window)
         self.appCoordinator?.start()
