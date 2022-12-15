@@ -51,7 +51,13 @@ final class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.setupUI()
+        setupNavBar()
         presenter?.viewDidLoadScreen()
+    }
+
+    /// Hide navigation bar.
+    func setupNavBar() {
+        self.navigationController?.isNavigationBarHidden = true
     }
 }
 

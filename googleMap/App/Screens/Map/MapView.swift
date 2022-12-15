@@ -111,7 +111,7 @@ final class MapView: UIView {
 
         addSubview(trackRouteButton)
         NSLayoutConstraint.activate([
-            trackRouteButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            trackRouteButton.bottomAnchor.constraint(equalTo: bottomAnchor),
             trackRouteButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             trackRouteButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             trackRouteButton.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.1)

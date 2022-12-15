@@ -24,7 +24,7 @@ protocol RealmServiceProtocol {
     ///   - model: Realm model.
     ///   - primaryKey: Key
     /// - Returns: Object.
-    func get<T: Object>(_ model: T.Type, primaryKey: String) throws -> T
+    func get<T: Object>(_ model: T.Type, primaryKey: Any) throws -> T
     /// Getting objects from the database.
     /// - Parameter model: Realm model.
     /// - Returns: Objects.
@@ -47,12 +47,16 @@ protocol RealmServiceProtocol {
 }
 
 final class RealmService: RealmServiceProtocol {
+    // MARK: - Private Properties
+
     private let realm: Realm
+
+    // MARK: - Initialization
 
     init() {
         do {
             var config: Realm.Configuration = Realm.Configuration()
-            config.deleteRealmIfMigrationNeeded = false
+            config.deleteRealmIfMigrationNeeded = true
             self.realm = try Realm(configuration: config)
         } catch {
             preconditionFailure(error.localizedDescription)
@@ -61,7 +65,9 @@ final class RealmService: RealmServiceProtocol {
         print("FILE: \(String(describing: realm.configuration.fileURL))")
     }
 
-    func get<T: Object>(_ model: T.Type, primaryKey: String) throws -> T {
+    // MARK: - Public Methods
+    
+    func get<T: Object>(_ model: T.Type, primaryKey: Any) throws -> T {
         guard let object = realm.object(ofType: T.self, forPrimaryKey: primaryKey) else { throw RealmError.noObject }
         return object
     }

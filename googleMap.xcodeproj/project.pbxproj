@@ -17,6 +17,16 @@
 		F23DE771293B6FFB00EDD7B9 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23DE770293B6FFB00EDD7B9 /* MapViewController.swift */; };
 		F23DE776293B6FFB00EDD7B9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F23DE775293B6FFB00EDD7B9 /* Assets.xcassets */; };
 		F23DE779293B6FFB00EDD7B9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F23DE777293B6FFB00EDD7B9 /* LaunchScreen.storyboard */; };
+		F25E52C229487922009058BC /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52C129487922009058BC /* UserModel.swift */; };
+		F25E52C529487A61009058BC /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52C429487A61009058BC /* LoginViewController.swift */; };
+		F25E52C729487A7E009058BC /* LoginPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52C629487A7E009058BC /* LoginPresenter.swift */; };
+		F25E52C929487A91009058BC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52C829487A91009058BC /* LoginView.swift */; };
+		F25E52CC29489B9B009058BC /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52CB29489B9B009058BC /* KeychainHelper.swift */; };
+		F25E52CF29489C76009058BC /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F25E52CE29489C76009058BC /* KeychainSwift */; };
+		F25E52D12948B86A009058BC /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25E52D02948B86A009058BC /* AuthService.swift */; };
+		F272009929499A0400CBF403 /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272009829499A0400CBF403 /* ApplicationCoordinator.swift */; };
+		F272009B29499BBC00CBF403 /* LoginCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272009A29499BBC00CBF403 /* LoginCoordinator.swift */; };
+		F272009D29499E4D00CBF403 /* MapCoordinating.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272009C29499E4D00CBF403 /* MapCoordinating.swift */; };
 		F27618EE29471EEA00A75235 /* DateFormatterHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27618ED29471EEA00A75235 /* DateFormatterHelper.swift */; };
 		F281B32C293E7EB600AF6BC4 /* GoogleMapsBase.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F281B329293E7EB400AF6BC4 /* GoogleMapsBase.xcframework */; };
 		F281B32D293E7EB600AF6BC4 /* GoogleMaps.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F281B32A293E7EB500AF6BC4 /* GoogleMaps.xcframework */; };
@@ -53,6 +63,15 @@
 		F23DE775293B6FFB00EDD7B9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F23DE778293B6FFB00EDD7B9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F23DE77A293B6FFB00EDD7B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F25E52C129487922009058BC /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
+		F25E52C429487A61009058BC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		F25E52C629487A7E009058BC /* LoginPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPresenter.swift; sourceTree = "<group>"; };
+		F25E52C829487A91009058BC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		F25E52CB29489B9B009058BC /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		F25E52D02948B86A009058BC /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		F272009829499A0400CBF403 /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
+		F272009A29499BBC00CBF403 /* LoginCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginCoordinator.swift; sourceTree = "<group>"; };
+		F272009C29499E4D00CBF403 /* MapCoordinating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCoordinating.swift; sourceTree = "<group>"; };
 		F27618ED29471EEA00A75235 /* DateFormatterHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatterHelper.swift; sourceTree = "<group>"; };
 		F281B329293E7EB400AF6BC4 /* GoogleMapsBase.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleMapsBase.xcframework; sourceTree = "<group>"; };
 		F281B32A293E7EB500AF6BC4 /* GoogleMaps.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleMaps.xcframework; sourceTree = "<group>"; };
@@ -89,6 +108,7 @@
 				F2E0B779293E28F9004067C1 /* CoreImage.framework in Frameworks */,
 				F2E0B77A293E28F9004067C1 /* SystemConfiguration.framework in Frameworks */,
 				F2E0B77B293E28F9004067C1 /* Metal.framework in Frameworks */,
+				F25E52CF29489C76009058BC /* KeychainSwift in Frameworks */,
 				F2E0B77C293E28F9004067C1 /* GLKit.framework in Frameworks */,
 				F2E0B77D293E28F9004067C1 /* CoreTelephony.framework in Frameworks */,
 				F2E0B77E293E28F9004067C1 /* ImageIO.framework in Frameworks */,
@@ -113,6 +133,7 @@
 		F23AA82C2944A2060094509B /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				F25E52C329487A43009058BC /* Login */,
 				F23AA82D2944A20E0094509B /* Map */,
 			);
 			path = Screens;
@@ -124,6 +145,7 @@
 				F23DE770293B6FFB00EDD7B9 /* MapViewController.swift */,
 				F2065F1729425F4800631F50 /* MapPresenter.swift */,
 				F2065F1529425BBB00631F50 /* MapView.swift */,
+				F272009C29499E4D00CBF403 /* MapCoordinating.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -132,6 +154,8 @@
 			isa = PBXGroup;
 			children = (
 				F239C8F3294378530011FB57 /* RealmService.swift */,
+				F25E52D02948B86A009058BC /* AuthService.swift */,
+				F272009829499A0400CBF403 /* ApplicationCoordinator.swift */,
 			);
 			path = BusinessLogic;
 			sourceTree = "<group>";
@@ -153,6 +177,7 @@
 			children = (
 				F2D7B2492943C03000F7A108 /* RouteModel.swift */,
 				F2D7B24B2943C06600F7A108 /* LocationModel.swift */,
+				F25E52C129487922009058BC /* UserModel.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -211,6 +236,17 @@
 			path = googleMap;
 			sourceTree = "<group>";
 		};
+		F25E52C329487A43009058BC /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				F25E52C429487A61009058BC /* LoginViewController.swift */,
+				F25E52C629487A7E009058BC /* LoginPresenter.swift */,
+				F25E52C829487A91009058BC /* LoginView.swift */,
+				F272009A29499BBC00CBF403 /* LoginCoordinator.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
 		F27618E829471E4B00A75235 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +258,7 @@
 		F27618EC29471EC700A75235 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				F25E52CB29489B9B009058BC /* KeychainHelper.swift */,
 				F27618ED29471EEA00A75235 /* DateFormatterHelper.swift */,
 			);
 			path = Helpers;
@@ -281,6 +318,7 @@
 			packageProductDependencies = (
 				F21943D22943A67F00CA0826 /* Realm */,
 				F21943D42943A67F00CA0826 /* RealmSwift */,
+				F25E52CE29489C76009058BC /* KeychainSwift */,
 			);
 			productName = googleMap;
 			productReference = F23DE769293B6FFB00EDD7B9 /* googleMap.app */;
@@ -312,6 +350,7 @@
 			mainGroup = F23DE760293B6FFB00EDD7B9;
 			packageReferences = (
 				F21943D12943A67F00CA0826 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				F25E52CD29489C76009058BC /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			productRefGroup = F23DE76A293B6FFB00EDD7B9 /* Products */;
 			projectDirPath = "";
@@ -360,6 +399,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F272009B29499BBC00CBF403 /* LoginCoordinator.swift in Sources */,
+				F272009929499A0400CBF403 /* ApplicationCoordinator.swift in Sources */,
+				F25E52C729487A7E009058BC /* LoginPresenter.swift in Sources */,
 				F27618EE29471EEA00A75235 /* DateFormatterHelper.swift in Sources */,
 				F23DE771293B6FFB00EDD7B9 /* MapViewController.swift in Sources */,
 				F239C8F4294378530011FB57 /* RealmService.swift in Sources */,
@@ -368,7 +410,13 @@
 				F2065F1629425BBB00631F50 /* MapView.swift in Sources */,
 				F2065F1829425F4800631F50 /* MapPresenter.swift in Sources */,
 				F2065F1A29426F7800631F50 /* AppModuleBuilder.swift in Sources */,
+				F25E52C229487922009058BC /* UserModel.swift in Sources */,
+				F25E52C929487A91009058BC /* LoginView.swift in Sources */,
+				F25E52CC29489B9B009058BC /* KeychainHelper.swift in Sources */,
+				F25E52D12948B86A009058BC /* AuthService.swift in Sources */,
+				F272009D29499E4D00CBF403 /* MapCoordinating.swift in Sources */,
 				F23DE76D293B6FFB00EDD7B9 /* AppDelegate.swift in Sources */,
+				F25E52C529487A61009058BC /* LoginViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,6 +656,14 @@
 				minimumVersion = 10.33.0;
 			};
 		};
+		F25E52CD29489C76009058BC /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 20.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -620,6 +676,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F21943D12943A67F00CA0826 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		F25E52CE29489C76009058BC /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F25E52CD29489C76009058BC /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
