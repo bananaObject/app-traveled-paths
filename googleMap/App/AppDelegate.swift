@@ -22,4 +22,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.appCoordinator?.start()
         return true
     }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        showPrivacyProtectionView()
+    }
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        hidePrivacyProtectionView()
+    }
+
+    private var privacyProtectionView: UIView?
+
+    /// Adds blur to the root screen.
+    private func showPrivacyProtectionView() {
+        guard let frame = window?.rootViewController?.view.frame else { return }
+        let view = PrivacyView(frame: frame)
+        window?.rootViewController?.view.addSubview(view)
+        privacyProtectionView = view
+    }
+
+    /// Removes blur from the root screen.
+    private func hidePrivacyProtectionView() {
+        privacyProtectionView?.removeFromSuperview()
+        privacyProtectionView = nil
+    }
+
 }

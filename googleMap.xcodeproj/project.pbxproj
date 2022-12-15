@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F205FF5A294B08ED003CB1FA /* PrivacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F205FF59294B08ED003CB1FA /* PrivacyView.swift */; };
 		F2065F1629425BBB00631F50 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2065F1529425BBB00631F50 /* MapView.swift */; };
 		F2065F1829425F4800631F50 /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2065F1729425F4800631F50 /* MapPresenter.swift */; };
 		F2065F1A29426F7800631F50 /* AppModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2065F1929426F7800631F50 /* AppModuleBuilder.swift */; };
@@ -53,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F205FF59294B08ED003CB1FA /* PrivacyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyView.swift; sourceTree = "<group>"; };
 		F2065F1529425BBB00631F50 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		F2065F1729425F4800631F50 /* MapPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPresenter.swift; sourceTree = "<group>"; };
 		F2065F1929426F7800631F50 /* AppModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModuleBuilder.swift; sourceTree = "<group>"; };
@@ -130,13 +132,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F23AA82C2944A2060094509B /* Screens */ = {
+		F205FF57294B08B9003CB1FA /* Screens */ = {
 			isa = PBXGroup;
 			children = (
 				F25E52C329487A43009058BC /* Login */,
 				F23AA82D2944A20E0094509B /* Map */,
 			);
 			path = Screens;
+			sourceTree = "<group>";
+		};
+		F205FF58294B08CC003CB1FA /* CustomView */ = {
+			isa = PBXGroup;
+			children = (
+				F205FF59294B08ED003CB1FA /* PrivacyView.swift */,
+			);
+			path = CustomView;
+			sourceTree = "<group>";
+		};
+		F23AA82C2944A2060094509B /* Flow */ = {
+			isa = PBXGroup;
+			children = (
+				F205FF58294B08CC003CB1FA /* CustomView */,
+				F205FF57294B08B9003CB1FA /* Screens */,
+			);
+			path = Flow;
 			sourceTree = "<group>";
 		};
 		F23AA82D2944A20E0094509B /* Map */ = {
@@ -166,7 +185,7 @@
 				F23AA82E2944A24A0094509B /* BusinessLogic */,
 				F23AA8312944A2960094509B /* Entity */,
 				F23AA8322944A2AC0094509B /* Assembly */,
-				F23AA82C2944A2060094509B /* Screens */,
+				F23AA82C2944A2060094509B /* Flow */,
 				F23DE76C293B6FFB00EDD7B9 /* AppDelegate.swift */,
 			);
 			path = App;
@@ -415,6 +434,7 @@
 				F25E52CC29489B9B009058BC /* KeychainHelper.swift in Sources */,
 				F25E52D12948B86A009058BC /* AuthService.swift in Sources */,
 				F272009D29499E4D00CBF403 /* MapCoordinating.swift in Sources */,
+				F205FF5A294B08ED003CB1FA /* PrivacyView.swift in Sources */,
 				F23DE76D293B6FFB00EDD7B9 /* AppDelegate.swift in Sources */,
 				F25E52C529487A61009058BC /* LoginViewController.swift in Sources */,
 			);
