@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func requestPermission(_ center: UNUserNotificationCenter) {
-        center.requestAuthorization( options: [.alert, .sound]) { [weak self] succes, error in
+        center.requestAuthorization( options: [.alert, .sound]) { [weak self] succes, _ in
             guard let self = self, succes else {
                 print("User has banned push notifications")
                 return
@@ -63,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func sendNotificationRequest(content: UNNotificationContent, trigger: UNNotificationTrigger) {
+    private func sendNotificationRequest(content: UNNotificationContent, trigger: UNNotificationTrigger) {
         let request = UNNotificationRequest(identifier: "timeNotification", content: content, trigger: trigger)
 
         let center = UNUserNotificationCenter.current()
@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func createContent() -> UNNotificationContent {
+    private func createContent() -> UNNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = "Time for a walk"
         content.body = "Start the application ?"
@@ -82,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return content
     }
 
-    func createTrigger() -> UNNotificationTrigger {
+    private func createTrigger() -> UNNotificationTrigger {
         UNTimeIntervalNotificationTrigger(timeInterval: 600, repeats: false)
     }
 }
