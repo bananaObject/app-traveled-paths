@@ -38,6 +38,7 @@ final class LoginView: UIView {
     private lazy var passField: UITextField = {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
+        field.isSecureTextEntry = true
         field.placeholder = "Password"
         field.delegate = self
         return field
@@ -123,6 +124,7 @@ final class LoginView: UIView {
     /// Settings fields.
     private func setupField() {
         [loginField, passField].forEach { field in
+            field.autocorrectionType = .no
             field.layer.cornerRadius = 8
             field.leftView = UIView(frame: .init(x: 0, y: 0, width: 4, height: field.frame.height))
             field.leftViewMode = .always
