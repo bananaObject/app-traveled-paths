@@ -5,6 +5,8 @@
 //  Created by Ke4a on 13.12.2022.
 //
 
+import RxCocoa
+import RxSwift
 import UIKit
 
 final class LoginView: UIView {
@@ -31,7 +33,6 @@ final class LoginView: UIView {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
         field.placeholder = "Username"
-        field.delegate = self
         return field
     }()
 
@@ -40,7 +41,6 @@ final class LoginView: UIView {
         field.translatesAutoresizingMaskIntoConstraints = false
         field.isSecureTextEntry = true
         field.placeholder = "Password"
-        field.delegate = self
         return field
     }()
 
@@ -56,6 +56,8 @@ final class LoginView: UIView {
         button.isEnabled = false
         return button
     }()
+
+    private lazy var disposeBag = DisposeBag()
 
     // MARK: - Public Properties
 
@@ -79,6 +81,7 @@ final class LoginView: UIView {
         backgroundColor = .white
 
         setupField()
+        configureBindingsFields()
 
         addSubview(registerSwitch)
         NSLayoutConstraint.activate([
@@ -136,17 +139,27 @@ final class LoginView: UIView {
 
     // MARK: - Private Methods
 
+    /// Configuration Rx bindiing.
+    private func configureBindingsFields() {
+        Observable
+            .combineLatest( loginField.rx.text, passField.rx.text )
+            .map { [weak self] login, pass in
+                guard let self = self else { return false }
+                return self.checkFilledFields(minimum: 5, login: login, pass: pass)
+            }
+            .subscribe { [weak submitButton] inputFilled in
+                submitButton?.isEnabled = inputFilled
+                submitButton?.backgroundColor = inputFilled ? .gray : .lightGray
+            }
+            .disposed(by: disposeBag)
+    }
+
     /// Checking completeness of the fields, if the fields are filled the button is activated.
     /// - Parameter minimum: Minimum number of characters  in the field.
-    private func checkFilledFields(_ minimum: Int) {
-        guard let loginCount = loginField.text?.count, let passCount = passField.text?.count else { return }
+    private func checkFilledFields(minimum: Int, login: String?, pass: String?) -> Bool {
+        guard let loginCount = login?.count, let passCount = pass?.count else { return false }
 
-        let isFilled = loginCount >= minimum && passCount >= minimum
-
-        guard isFilled != submitButton.isEnabled else { return }
-
-        submitButton.isEnabled = isFilled
-        submitButton.backgroundColor = isFilled ? .gray : .lightGray
+        return loginCount >= minimum && passCount >= minimum
     }
 
     // MARK: - Actions
@@ -159,8 +172,8 @@ final class LoginView: UIView {
             sender.transform = .identity
 
             guard let self = self,
-                    let login = self.loginField.text,
-                    let pass = self.passField.text
+                  let login = self.loginField.text,
+                  let pass = self.passField.text
             else { return }
             
             if self.registerSwitch.isOn {
@@ -189,16 +202,5 @@ extension LoginView: LoginViewInput {
         let cancelAction = UIAlertAction(title: "Ok", style: .default)
         allert.addAction(cancelAction)
         controller?.present(allert, animated: true)
-    }
-}
-
-// MARK: - UITextFieldDelegate
-
-extension LoginView: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
-        checkFilledFields(5)
-        return true
     }
 }
