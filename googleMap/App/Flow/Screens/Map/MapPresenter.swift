@@ -8,6 +8,7 @@
 import Foundation
 import GoogleMaps
 import RealmSwift
+import RxSwift
 
 enum PathChoice {
     case previous
@@ -52,7 +53,7 @@ protocol MapViewInput: AnyObject {
                       nextButtonIsEnabled next: Bool)
 }
 
-final class MapPresenter: NSObject {
+final class MapPresenter {
     // MARK: - Visual Components
 
     weak var viewInput: MapViewInput?
@@ -91,31 +92,26 @@ final class MapPresenter: NSObject {
     }
 
     /// Location manager.
-    private var locationManager: CLLocationManager?
+    private let locationManager: LocationManagerProtocol
 
     /// Service for working with the database.
     private var realm: RealmServiceProtocol
     /// User.
     private var user: UserModel
 
+    /// Thread safe bag that disposes added disposables on deinit.
+    private lazy var disposeBag = DisposeBag()
+
     // MARK: - Initialization
 
-    init(_ realm: RealmServiceProtocol, user: UserModel) {
+    init(realm: RealmServiceProtocol, locationManager: LocationManagerProtocol, user: UserModel) {
         self.realm = realm
         self.user = user
+        self.locationManager = locationManager
+        configureRx()
     }
 
     // MARK: - Private Methods
-
-    /// Configuration location manager.
-    private func configureLocationManager() {
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.allowsBackgroundLocationUpdates = true
-        locationManager?.requestWhenInUseAuthorization()
-        locationManager?.startMonitoringSignificantLocationChanges()
-        locationManager?.pausesLocationUpdatesAutomatically = false
-    }
 
     /// Saving the route in the database.
     private  func saveRouteInDb(_ route: RouteModel) {
@@ -159,6 +155,41 @@ final class MapPresenter: NSObject {
         let nextButton = index != 0 && count > 1
 
         return (previousButton, nextButton)
+    }
+
+    /// Configuration binding observables .
+    private func configureRx() {
+        locationManager.statusAuthorization
+            .subscribe {[weak self] event in
+                guard let self = self, let status = event.element else { return }
+
+                switch status {
+                case .notDetermined,
+                        .restricted,
+                        .denied:
+                    self.viewInput?.locationEnabled = false
+                case .authorizedAlways,
+                        .authorizedWhenInUse:
+                    self.viewInput?.locationEnabled = true
+                    guard let coordinate = self.locationManager.currentLocation?.coordinate else { return }
+                    self.viewInput?.showLocation(coordinate)
+                @unknown default:
+                    self.viewInput?.locationEnabled = false
+                }
+            }.disposed(by: disposeBag)
+
+        locationManager.updateLocation
+            .subscribe { [weak self] event in
+                guard let self = self,
+                      self.isMarkingRoute,
+                      let coordinate = event.element?.coordinate else { return }
+
+                self.routeCoordinates.append(coordinate)
+
+                guard UIApplication.shared.applicationState != .background  else { return }
+
+                self.viewInput?.showLocation(coordinate)
+            }.disposed(by: disposeBag)
     }
 }
 
@@ -206,12 +237,7 @@ extension MapPresenter: MapViewOutput {
     }
 
     func viewShowLocation() {
-        guard let manager = locationManager else {
-            configureLocationManager()
-            return
-        }
-
-        guard let coordinate = manager.location?.coordinate else { return }
+        guard let coordinate = self.locationManager.currentLocation?.coordinate else { return }
 
         viewInput?.showLocation(coordinate)
     }
@@ -247,24 +273,18 @@ extension MapPresenter: MapViewOutput {
     func viewMarkingRoute(_ on: Bool) {
         isMarkingRoute = on
         if on {
-            guard let manager = locationManager else {
-                configureLocationManager()
-                viewMarkingRoute(on)
-                return
-            }
-
             tempRoute = RouteModel()
-            manager.startUpdatingLocation()
+            locationManager.startUpdatingLocation()
         } else {
-            locationManager?.stopUpdatingLocation()
+            locationManager.stopUpdatingLocation()
 
             // Remove all markers from the map.
             visibleMarkers.forEach { $0.map = nil }
             visibleMarkers.removeAll()
 
             guard routeCoordinates.count > 4,
-                    let routesDb = routesDb,
-                    let tempRoute = tempRoute
+                  let routesDb = routesDb,
+                  let tempRoute = tempRoute
             else {
                 routeCoordinates = route?.getCoordinates ?? []
                 viewInput?.showRoute(routeCoordinates)
@@ -285,34 +305,5 @@ extension MapPresenter: MapViewOutput {
                                     nextButtonIsEnabled: buttons.next)
 
         }
-    }
-}
-
-extension MapPresenter: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager,
-                         didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined,
-                .restricted,
-                .denied:
-            viewInput?.locationEnabled = false
-        case .authorizedAlways,
-                .authorizedWhenInUse:
-            viewInput?.locationEnabled = true
-            guard let coordinates = manager.location?.coordinate else { return }
-            viewInput?.showLocation(coordinates)
-        @unknown default:
-            viewInput?.locationEnabled = false
-        }
-    }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard isMarkingRoute, let last = locations.last else { return }
-
-        routeCoordinates.append(last.coordinate)
-
-        guard UIApplication.shared.applicationState != .background  else { return }
-
-        viewInput?.showLocation(last.coordinate)
     }
 }

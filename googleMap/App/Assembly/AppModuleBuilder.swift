@@ -18,7 +18,8 @@ final class AppModuleBuilder {
 
     static func mapScreen(user: UserModel, coordinator: Coordinator) -> UIViewController {
         let realm = RealmService()
-        let presenter = MapPresenter(realm, user: user)
+        let location = LocationManager()
+        let presenter = MapPresenter(realm: realm, locationManager: location, user: user)
         let viewController = MapViewController(presenter)
         presenter.viewInput = viewController
 
