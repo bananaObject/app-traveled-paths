@@ -20,6 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         self.appCoordinator = ApplicationCoordinator(window: window)
         self.appCoordinator?.start()
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        requestPermission(center)
         return true
     }
 
@@ -47,4 +50,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         privacyProtectionView = nil
     }
 
+    private func requestPermission(_ center: UNUserNotificationCenter) {
+        center.requestAuthorization( options: [.alert, .sound]) { [weak self] succes, _ in
+            guard let self = self, succes else {
+                print("User has banned push notifications")
+                return
+            }
+            let content = self.createContent()
+            let trigger = self.createTrigger()
+
+            self.sendNotificationRequest(content: content, trigger: trigger)
+        }
+    }
+
+    private func sendNotificationRequest(content: UNNotificationContent, trigger: UNNotificationTrigger) {
+        let request = UNNotificationRequest(identifier: "timeNotification", content: content, trigger: trigger)
+
+        let center = UNUserNotificationCenter.current()
+        center.add(request) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+
+    private func createContent() -> UNNotificationContent {
+        let content = UNMutableNotificationContent()
+        content.title = "Time for a walk"
+        content.body = "Start the application ?"
+
+        return content
+    }
+
+    private func createTrigger() -> UNNotificationTrigger {
+        UNTimeIntervalNotificationTrigger(timeInterval: 600, repeats: false)
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        print(response)
+    }
 }
