@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GoogleMaps
 import RealmSwift
 
 protocol LoginViewInput: AnyObject {
@@ -13,6 +14,8 @@ protocol LoginViewInput: AnyObject {
     /// - Parameter tittle: Allert tittle.
     /// - Parameter text: Allert text.
     func showAllert(_ tittle: String, _ text: String)
+
+    func showSetApiKeyAller()
 }
 
 protocol LoginViewOutput: AnyObject {
@@ -27,6 +30,9 @@ protocol LoginViewOutput: AnyObject {
     ///   - login: User login.
     ///   - pass: User pass.
     func viewRequestedLogin(_ login: String, _ pass: String)
+
+    /// View check api key.
+    func viewCheckApiKey()
 }
 
 final class LoginPresenter {
@@ -58,17 +64,26 @@ final class LoginPresenter {
 // MARK: - LoginViewOutput
 
 extension LoginPresenter: LoginViewOutput {
+    func viewCheckApiKey() {
+        guard let key = UserDefaults.standard.string(forKey: "ApiKey") else {
+            viewInput?.showSetApiKeyAller()
+            return
+        }
+
+        GMSServices.provideAPIKey(key)
+    }
+
     func viewRequestedRegistration(_ login: String, _ pass: String) {
         // If there is no ID or no password, re-register.
         guard let id = auth.getId(login),
-                let passKeychain = auth.getPassword(login)
+              let passKeychain = auth.getPassword(login)
         else {
             do {
                 //  Create a user in the database and store their authentication details in a secure repository
                 let user = UserModel()
                 try realm.set(user)
                 auth.setLoginPass(id: user.id.stringValue, login: login, pass: pass)
-                viewInput?.showAllert("Succes", "Registration is complete")
+                viewInput?.showAllert("Success", "Registration is complete")
             } catch {
 
             }
@@ -76,12 +91,12 @@ extension LoginPresenter: LoginViewOutput {
         }
 
         guard passKeychain != pass else {
-            viewInput?.showAllert("Succes", "Password is already registered to the user")
+            viewInput?.showAllert("Success", "Password is already registered to the user")
             return
         }
         // If the password is new, overwrite it.
         auth.setLoginPass(id: id, login: login, pass: pass)
-        viewInput?.showAllert("Succes", "Password has been changed")
+        viewInput?.showAllert("Success", "Password has been changed")
     }
 
     func viewRequestedLogin(_ login: String, _ pass: String) {
@@ -94,14 +109,15 @@ extension LoginPresenter: LoginViewOutput {
             viewInput?.showAllert("Authorization error", "Bad password")
             return
         }
-        
+
         do {
             // If the password is correct, retrieve the user data and transfer the data to the new screen.
             let id = try ObjectId(string: id)
             let user = try realm.get(UserModel.self, primaryKey: id)
             coordinator.openMapScreen(user: user)
         } catch {
-            // If there is an id in the secure storage but not in the database, creates a user with this id in the database.
+            // If there is an id in the secure storage but not in the database,
+            // creates a user with this id in the database.
             do {
                 let id = try ObjectId(string: id)
                 let user = UserModel(id: id)

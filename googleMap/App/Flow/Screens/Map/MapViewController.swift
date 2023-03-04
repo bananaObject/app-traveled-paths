@@ -5,6 +5,7 @@
 //  Created by Ke4a on 03.12.2022.
 //
 
+import Combine
 import GoogleMaps
 import UIKit
 
@@ -12,12 +13,10 @@ final class MapViewController: UIViewController {
     // MARK: - Visual Components
 
     private var mapView: MapView {
-        guard let view = self.view as? MapView
-        else {
-            let currentView = MapView()
-            currentView.controller = self
-            self.view = currentView
-            return currentView
+        guard let view = self.view as? MapView else {
+            let correctView = MapView()
+            correctView.controller = self
+            return correctView
         }
 
         return view
@@ -42,10 +41,8 @@ final class MapViewController: UIViewController {
 
     override func loadView() {
         super.loadView()
-        let view = MapView()
-        view.controller = self
 
-        self.view = view
+        self.view = mapView
     }
 
     override func viewDidLoad() {
@@ -64,14 +61,30 @@ final class MapViewController: UIViewController {
 // MARK: - MapViewOutput
 
 extension MapViewController: MapViewOutput {
+    var routePublisher: AnyPublisher<[CLLocationCoordinate2D], Never> {
+        guard let presenter else { preconditionFailure("lost presenter") }
+        return presenter.routePublisher
+    }
+
+    var locationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never> {
+        guard let presenter else { preconditionFailure("lost presenter") }
+        return presenter.locationPublisher
+    }
+
+    var locationEnabledPublisher: AnyPublisher<Bool, Never> {
+        guard let presenter else { preconditionFailure("lost presenter") }
+        return presenter.locationEnabledPublisher
+    }
+
     func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion) {
+
         presenter?.viewUpdateVisableMarks(visableRegion)
     }
 
     func viewDidLoadScreen() {
         presenter?.viewDidLoadScreen()
     }
-    
+
     func viewShowLocation() {
         presenter?.viewShowLocation()
     }
@@ -97,29 +110,8 @@ extension MapViewController: MapViewInput {
                              previousButtonIsEnabled: previous, nextButtonIsEnabled: next)
     }
 
-    func showRoute(_ coordinates: [CLLocationCoordinate2D]) {
-        mapView.showRoute(coordinates)
-    }
-
-    func showLocation(_ coordinate: CLLocationCoordinate2D) {
-        mapView.showLocation(coordinate)
-    }
-
-    var locationEnabled: Bool {
-        get {
-            mapView.locationEnabled
-        }
-        set {
-            mapView.locationEnabled = newValue
-        }
-    }
-
     func createMarker(_ coordinate: CLLocationCoordinate2D) -> GMSMarker {
         mapView.createMarker(coordinate)
-    }
-
-    var visibleRegion: GMSVisibleRegion {
-        mapView.visibleRegion
     }
 }
 

@@ -5,8 +5,7 @@
 //  Created by Ke4a on 13.12.2022.
 //
 
-import RxCocoa
-import RxSwift
+import Combine
 import UIKit
 
 final class LoginView: UIView {
@@ -32,6 +31,7 @@ final class LoginView: UIView {
     private lazy var loginField: UITextField = {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
+        field.autocapitalizationType = .none
         field.placeholder = "Username"
         return field
     }()
@@ -57,8 +57,6 @@ final class LoginView: UIView {
         return button
     }()
 
-    private lazy var disposeBag = DisposeBag()
-
     // MARK: - Public Properties
 
     weak var controller: (UIViewController & LoginViewOutput)?
@@ -81,7 +79,6 @@ final class LoginView: UIView {
         backgroundColor = .white
 
         setupField()
-        configureBindingsFields()
 
         addSubview(registerSwitch)
         NSLayoutConstraint.activate([
@@ -122,6 +119,8 @@ final class LoginView: UIView {
 
         submitButton.addTarget(self, action: #selector(submitButtonAction), for: .touchUpInside)
         registerSwitch.addTarget(self, action: #selector(registerSwitchAction), for: .valueChanged)
+        loginField.addTarget(self, action: #selector(changedValue), for: .editingChanged)
+        passField.addTarget(self, action: #selector(changedValue), for: .editingChanged)
     }
 
     /// Settings fields.
@@ -138,21 +137,6 @@ final class LoginView: UIView {
     }
 
     // MARK: - Private Methods
-
-    /// Configuration Rx bindiing.
-    private func configureBindingsFields() {
-        Observable
-            .combineLatest( loginField.rx.text, passField.rx.text )
-            .map { [weak self] login, pass in
-                guard let self = self else { return false }
-                return self.checkFilledFields(minimum: 5, login: login, pass: pass)
-            }
-            .subscribe { [weak submitButton] inputFilled in
-                submitButton?.isEnabled = inputFilled
-                submitButton?.backgroundColor = inputFilled ? .gray : .lightGray
-            }
-            .disposed(by: disposeBag)
-    }
 
     /// Checking completeness of the fields, if the fields are filled the button is activated.
     /// - Parameter minimum: Minimum number of characters  in the field.
@@ -175,7 +159,7 @@ final class LoginView: UIView {
                   let login = self.loginField.text,
                   let pass = self.passField.text
             else { return }
-            
+
             if self.registerSwitch.isOn {
                 self.controller?.viewRequestedRegistration(login, pass)
             } else {
@@ -192,15 +176,10 @@ final class LoginView: UIView {
             submitButton.setTitle("Login", for: .normal)
         }
     }
-}
 
-// MARK: - LoginViewInput
-
-extension LoginView: LoginViewInput {
-    func showAllert(_ tittle: String, _ text: String) {
-        let allert = UIAlertController(title: tittle, message: text, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Ok", style: .default)
-        allert.addAction(cancelAction)
-        controller?.present(allert, animated: true)
+    @objc private func changedValue(_ sender: UITextField) {
+        let isFilled = self.checkFilledFields(minimum: 5, login: loginField.text, pass: passField.text)
+        submitButton.isEnabled = isFilled
+        submitButton.backgroundColor = isFilled ? .gray : .lightGray
     }
 }

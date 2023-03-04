@@ -5,17 +5,17 @@
 //  Created by Ke4a on 15.12.2022.
 //
 
+import Combine
 import CoreLocation
 import Foundation
 import GoogleMaps
-import RxSwift
 
 /// The object that you use to start and stop the delivery of location-related events to your app.
 protocol LocationManagerProtocol {
     /// Updated location.
-    var updateLocation: Observable<CLLocation> { get }
+    var updateLocation: AnyPublisher<CLLocation, Never> { get }
     /// The current authorization status for the app.
-    var statusAuthorization: Observable<CLAuthorizationStatus> { get }
+    var statusAuthorization: AnyPublisher<CLAuthorizationStatus, Never> { get }
     /// The most recently retrieved user location.
     var currentLocation: CLLocation? { get }
     /// Starts the generation of updates that report the user’s current location.
@@ -30,8 +30,8 @@ class LocationManager: NSObject {
 
     /// Location manager.
     private lazy var manager: CLLocationManager = CLLocationManager()
-    private var location = PublishSubject<CLLocation>()
-    private var status = PublishSubject<CLAuthorizationStatus>()
+    private var location = PassthroughSubject<CLLocation, Never>()
+    private var status = PassthroughSubject<CLAuthorizationStatus, Never>()
 
     // MARK: - Initialization
 
@@ -55,12 +55,12 @@ class LocationManager: NSObject {
 // MARK: - LocationManagerProtocol
 
 extension LocationManager: LocationManagerProtocol {
-    var updateLocation: Observable<CLLocation> {
-        location.asObservable()
+    var updateLocation: AnyPublisher<CLLocation, Never> {
+        location.eraseToAnyPublisher()
     }
 
-    var statusAuthorization: Observable<CLAuthorizationStatus> {
-        status.asObservable()
+    var statusAuthorization: AnyPublisher<CLAuthorizationStatus, Never> {
+        status.eraseToAnyPublisher()
     }
 
     var currentLocation: CLLocation? {
@@ -82,12 +82,12 @@ extension LocationManager: LocationManagerProtocol {
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager,
                          didChangeAuthorization status: CLAuthorizationStatus) {
-        self.status.onNext(status)
+        self.status.send(status)
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let last = locations.last else { return }
 
-        location.onNext(last)
+        location.send(last)
     }
 }
