@@ -15,7 +15,7 @@ final class UserModel: Object {
         self.init()
         self.id = id
     }
-    
+
     func addRoute(_ route: RouteModel) {
         routes.append(route)
     }

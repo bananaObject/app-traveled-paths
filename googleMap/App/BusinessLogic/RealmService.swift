@@ -66,7 +66,7 @@ final class RealmService: RealmServiceProtocol {
     }
 
     // MARK: - Public Methods
-    
+
     func get<T: Object>(_ model: T.Type, primaryKey: Any) throws -> T {
         guard let object = realm.object(ofType: T.self, forPrimaryKey: primaryKey) else { throw RealmError.noObject }
         return object

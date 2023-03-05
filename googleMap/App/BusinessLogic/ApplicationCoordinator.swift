@@ -26,7 +26,7 @@ protocol Coordinating {
 
 final class ApplicationCoordinator {
     // MARK: - Private Properties
-    
+
     private lazy var navController: UINavigationController = {
         let nav = UINavigationController()
         nav.view.backgroundColor = .white

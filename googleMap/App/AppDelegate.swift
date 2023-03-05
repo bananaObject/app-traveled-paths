@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         GMSServices.setMetalRendererEnabled(true)
-        GMSServices.provideAPIKey("AIzaSyBhgT3hAs_nddjnk8Fubv9ZyH2l0DfK5ng")
         window = UIWindow(frame: UIScreen.main.bounds)
         self.appCoordinator = ApplicationCoordinator(window: window)
         self.appCoordinator?.start()
@@ -51,8 +50,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func requestPermission(_ center: UNUserNotificationCenter) {
-        center.requestAuthorization( options: [.alert, .sound]) { [weak self] succes, _ in
-            guard let self = self, succes else {
+        center.requestAuthorization( options: [.alert, .sound]) { [weak self] success, _ in
+            guard let self = self, success else {
                 print("User has banned push notifications")
                 return
             }

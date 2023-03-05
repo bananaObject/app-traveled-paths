@@ -5,10 +5,10 @@
 //  Created by Ke4a on 08.12.2022.
 //
 
+import Combine
 import Foundation
 import GoogleMaps
 import RealmSwift
-import RxSwift
 
 enum PathChoice {
     case previous
@@ -27,21 +27,17 @@ protocol MapViewOutput {
     func viewShowLocation()
     /// View shows the screen.
     func viewDidLoadScreen()
+
+    var routePublisher: AnyPublisher<[CLLocationCoordinate2D], Never> { get }
+    var locationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never> { get }
+    var locationEnabledPublisher: AnyPublisher<Bool, Never> { get }
 }
 
 protocol MapViewInput: AnyObject {
-    /// Controls whether the My Location dot and accuracy circle is enabled. Defaults to false.
-    var locationEnabled: Bool { get set }
     /// Creates location marker on map.
     /// - Parameter coordinate: The latitude and longitude associated with a location
     /// - Returns: Marker
     func createMarker(_ coordinate: CLLocationCoordinate2D) -> GMSMarker
-    /// As animateToCameraPosition:, but changes only the location of the camera.
-    /// - Parameter coordinate: The latitude and longitude associated with a location.
-    func showLocation(_ coordinate: CLLocationCoordinate2D)
-    /// As animateToCameraPosition:, but changes only the location of the camera.
-    /// - Parameter coordinates: Array  latitude and longitude associated with a location.
-    func showRoute(_ coordinates: [CLLocationCoordinate2D])
 
     /// Set route information.
     /// - Parameters:
@@ -77,7 +73,7 @@ final class MapPresenter {
     private lazy var visibleMarkers: [GMSMarker] = []
 
     /// User route.
-    private var route: RouteModel? {
+    private var routeModel: RouteModel? {
         willSet {
             guard let route = newValue else { return }
             routeCoordinates = route.locations.map { $0.coordinate }
@@ -91,6 +87,12 @@ final class MapPresenter {
         }
     }
 
+    private lazy var routeSubject = PassthroughSubject<[CLLocationCoordinate2D], Never>()
+    private lazy var locationSubject = CurrentValueSubject<CLLocationCoordinate2D?, Never>(nil)
+    private lazy var locationEnabledSubject =  CurrentValueSubject<Bool, Never>(false)
+
+    private var subscriptions = Set<AnyCancellable>()
+
     /// Location manager.
     private let locationManager: LocationManagerProtocol
 
@@ -99,15 +101,12 @@ final class MapPresenter {
     /// User.
     private var user: UserModel
 
-    /// Thread safe bag that disposes added disposables on deinit.
-    private lazy var disposeBag = DisposeBag()
-
     // MARK: - Initialization
 
     init(realm: RealmServiceProtocol, locationManager: LocationManagerProtocol, user: UserModel) {
         self.realm = realm
-        self.user = user
         self.locationManager = locationManager
+        self.user = user
         configureRx()
     }
 
@@ -160,40 +159,52 @@ final class MapPresenter {
     /// Configuration binding observables .
     private func configureRx() {
         locationManager.statusAuthorization
-            .subscribe {[weak self] event in
-                guard let self = self, let status = event.element else { return }
+            .sink { [weak self] event in
+                guard let self = self else { return }
 
-                switch status {
+                switch event {
                 case .notDetermined,
                         .restricted,
                         .denied:
-                    self.viewInput?.locationEnabled = false
+                    self.locationEnabledSubject.send(false)
                 case .authorizedAlways,
                         .authorizedWhenInUse:
-                    self.viewInput?.locationEnabled = true
+                    self.locationEnabledSubject.send(true)
                     guard let coordinate = self.locationManager.currentLocation?.coordinate else { return }
-                    self.viewInput?.showLocation(coordinate)
+                    self.locationSubject.send(coordinate)
                 @unknown default:
-                    self.viewInput?.locationEnabled = false
+                    self.locationEnabledSubject.send(false)
                 }
-            }.disposed(by: disposeBag)
+            }.store(in: &subscriptions)
 
         locationManager.updateLocation
-            .subscribe { [weak self] event in
+            .sink { [weak self] event in
                 guard let self = self,
-                      self.isMarkingRoute,
-                      let coordinate = event.element?.coordinate else { return }
+                      self.isMarkingRoute else { return }
 
+                let coordinate = event.coordinate
                 self.routeCoordinates.append(coordinate)
 
                 guard UIApplication.shared.applicationState != .background  else { return }
 
-                self.viewInput?.showLocation(coordinate)
-            }.disposed(by: disposeBag)
+                self.locationSubject.send(coordinate)
+            }.store(in: &subscriptions)
     }
 }
 
 extension MapPresenter: MapViewOutput {
+    var routePublisher: AnyPublisher<[CLLocationCoordinate2D], Never> {
+        routeSubject.eraseToAnyPublisher()
+    }
+
+    var locationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never> {
+        locationSubject.eraseToAnyPublisher()
+    }
+
+    var locationEnabledPublisher: AnyPublisher<Bool, Never> {
+        locationEnabledSubject.eraseToAnyPublisher()
+    }
+
     func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion) {
         guard isMarkingRoute else { return }
         let boundsVisable = GMSCoordinateBounds(region: visableRegion)
@@ -239,30 +250,30 @@ extension MapPresenter: MapViewOutput {
     func viewShowLocation() {
         guard let coordinate = self.locationManager.currentLocation?.coordinate else { return }
 
-        viewInput?.showLocation(coordinate)
+        self.locationSubject.send(coordinate)
     }
 
     func viewShowRoute(_ path: PathChoice) {
         guard let routes = routesDb?.sorted(byKeyPath: "date", ascending: false), !routes.isEmpty else { return }
 
         // If there is no index, then we show the first element.
-        var index = routes.firstIndex(where: { $0.id == route?.id }) ?? 0
+        var index = routes.firstIndex(where: { $0.id == routeModel?.id }) ?? 0
         // If there is no route, then this is the first run, we show the first item.
         // If the index is outside the array, it exits the function.
         switch path {
-        case .previous where route != nil:
+        case .previous where routeModel != nil:
             guard index < routes.count - 1 else { return }
             index += 1
-        case .next where route != nil :
+        case .next where routeModel != nil:
             guard index > 0 else { return }
             index -= 1
         default:
             break
         }
-        self.route = routes[index]
+        self.routeModel = routes[index]
 
-        guard let route = self.route else { return }
-        viewInput?.showRoute(routeCoordinates)
+        guard let route = self.routeModel else { return }
+        routeSubject.send(routeCoordinates)
         let buttons = calculateButtonIsEnabled(index, routes.count)
         viewInput?.setInfoPanel(firstLineText: "\(route.getDateString)",
                                 secondLineText: "\(index + 1)|\(routes.count)",
@@ -286,18 +297,18 @@ extension MapPresenter: MapViewOutput {
                   let routesDb = routesDb,
                   let tempRoute = tempRoute
             else {
-                routeCoordinates = route?.getCoordinates ?? []
-                viewInput?.showRoute(routeCoordinates)
+                routeCoordinates = routeModel?.getCoordinates ?? []
+                routeSubject.send(routeCoordinates)
                 return
             }
 
             tempRoute.addLocation(routeCoordinates)
-            self.route = tempRoute
+            self.routeModel = tempRoute
 
             checkTheRouteLimitInDb()
             saveRouteInDb(tempRoute)
 
-            viewInput?.showRoute(routeCoordinates)
+            self.routeSubject.send(routeCoordinates)
             let buttons = calculateButtonIsEnabled(0, routesDb.count)
             viewInput?.setInfoPanel(firstLineText: "\(tempRoute.getDateString)",
                                     secondLineText: "\(1)|\(routesDb.count)",

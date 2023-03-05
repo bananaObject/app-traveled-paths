@@ -31,7 +31,7 @@ final class AuthService: AuthServiceProtocol {
     private lazy var keychain = KeychainHelper()
 
     // MARK: - Public Properties
-    
+
     func getId(_ login: String) -> String? {
         let logins = keychain.get(key: .logins)
         return logins?[login]

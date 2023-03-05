@@ -5,6 +5,7 @@
 //  Created by Ke4a on 08.12.2022.
 //
 
+import Combine
 import GoogleMaps
 import UIKit
 
@@ -79,7 +80,11 @@ final class MapView: UIView {
 
     // MARK: - Public Properties
 
-    weak var controller: (MapViewOutput & GMSMapViewDelegate)?
+    weak var controller: (MapViewOutput &  GMSMapViewDelegate)? {
+        willSet {
+            configureRx(newValue)
+        }
+    }
 
     // MARK: - Private Properties
 
@@ -95,8 +100,10 @@ final class MapView: UIView {
 
     // MARK: - Initialization
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    private var subscriptions = Set<AnyCancellable>()
+
+    init() {
+        super.init(frame: .zero)
     }
 
     required init?(coder: NSCoder) {
@@ -162,9 +169,35 @@ final class MapView: UIView {
         previousRouteButton.addTarget(self, action: #selector(previousRouteButtonAction), for: .touchUpInside)
         nextRouteButton.addTarget(self, action: #selector(nextRouteButtonAction), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(locationButtonAction), for: .touchUpInside)
-
     }
     // MARK: - Private Methods
+
+    private func configureRx(_ newValue: MapViewOutput?) {
+        guard let controller = newValue else { return }
+
+        controller.routePublisher
+            .sink(receiveValue: { [weak self] coordinates in
+                guard let self else { return }
+
+                self.deleteRoute()
+                self.newRoute(coordinates)
+
+                let bounds = GMSCoordinateBounds(path: self.route)
+                self.mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 100))
+            }).store(in: &subscriptions)
+
+        controller.locationPublisher
+            .compactMap { $0 }
+            .sink { [ weak self ] location in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self?.mapView.animate(to: .camera(withTarget: location, zoom: 15))
+                }
+            }.store(in: &subscriptions)
+
+        controller.locationEnabledPublisher
+            .assign(to: \.isMyLocationEnabled, on: mapView)
+            .store(in: &subscriptions)
+    }
 
     /// Configuration map view.
     private func configureMap() {
@@ -240,19 +273,6 @@ extension MapView: MapViewInput {
         }
     }
 
-    var locationEnabled: Bool {
-        get {
-            mapView.isMyLocationEnabled
-        }
-        set {
-            mapView.isMyLocationEnabled = newValue
-        }
-    }
-
-    var visibleRegion: GMSVisibleRegion {
-        mapView.projection.visibleRegion()
-    }
-
     func createMarker(_ coordinate: CLLocationCoordinate2D) -> GMSMarker {
         let mark = GMSMarker(position: coordinate)
         let dotSize = 5
@@ -263,17 +283,5 @@ extension MapView: MapViewInput {
         mark.iconView = iconView
         mark.map = mapView
         return mark
-    }
-
-    func showLocation(_ coordinate: CLLocationCoordinate2D) {
-        mapView.animate(to: .camera(withTarget: coordinate, zoom: 15))
-    }
-
-    func showRoute(_ coordinates: [CLLocationCoordinate2D]) {
-        deleteRoute()
-        newRoute(coordinates)
-
-        let bounds = GMSCoordinateBounds(path: route)
-        mapView.animate(with: GMSCameraUpdate.fit(bounds, withPadding: 100))
     }
 }

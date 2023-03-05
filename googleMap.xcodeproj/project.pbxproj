@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F205FF5A294B08ED003CB1FA /* PrivacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F205FF59294B08ED003CB1FA /* PrivacyView.swift */; };
-		F205FFB3294B65AA003CB1FA /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F205FFB2294B65AA003CB1FA /* RxCocoa */; };
-		F205FFB5294B65AA003CB1FA /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F205FFB4294B65AA003CB1FA /* RxRelay */; };
-		F205FFB7294B65AA003CB1FA /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F205FFB6294B65AA003CB1FA /* RxSwift */; };
 		F205FFB9294B6DEB003CB1FA /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F205FFB8294B6DEB003CB1FA /* LocationManager.swift */; };
 		F2065F1629425BBB00631F50 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2065F1529425BBB00631F50 /* MapView.swift */; };
 		F2065F1829425F4800631F50 /* MapPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2065F1729425F4800631F50 /* MapPresenter.swift */; };
@@ -111,12 +108,9 @@
 			files = (
 				F2E0B776293E28F8004067C1 /* libc++.tbd in Frameworks */,
 				F2E0B777293E28F8004067C1 /* CoreData.framework in Frameworks */,
-				F205FFB7294B65AA003CB1FA /* RxSwift in Frameworks */,
-				F205FFB3294B65AA003CB1FA /* RxCocoa in Frameworks */,
 				F2E0B778293E28F8004067C1 /* CoreGraphics.framework in Frameworks */,
 				F2E0B779293E28F9004067C1 /* CoreImage.framework in Frameworks */,
 				F2E0B77A293E28F9004067C1 /* SystemConfiguration.framework in Frameworks */,
-				F205FFB5294B65AA003CB1FA /* RxRelay in Frameworks */,
 				F2E0B77B293E28F9004067C1 /* Metal.framework in Frameworks */,
 				F25E52CF29489C76009058BC /* KeychainSwift in Frameworks */,
 				F2E0B77C293E28F9004067C1 /* GLKit.framework in Frameworks */,
@@ -347,9 +341,6 @@
 				F21943D22943A67F00CA0826 /* Realm */,
 				F21943D42943A67F00CA0826 /* RealmSwift */,
 				F25E52CE29489C76009058BC /* KeychainSwift */,
-				F205FFB2294B65AA003CB1FA /* RxCocoa */,
-				F205FFB4294B65AA003CB1FA /* RxRelay */,
-				F205FFB6294B65AA003CB1FA /* RxSwift */,
 			);
 			productName = googleMap;
 			productReference = F23DE769293B6FFB00EDD7B9 /* googleMap.app */;
@@ -382,7 +373,6 @@
 			packageReferences = (
 				F21943D12943A67F00CA0826 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F25E52CD29489C76009058BC /* XCRemoteSwiftPackageReference "keychain-swift" */,
-				F205FFB1294B65AA003CB1FA /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = F23DE76A293B6FFB00EDD7B9 /* Products */;
 			projectDirPath = "";
@@ -682,14 +672,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F205FFB1294B65AA003CB1FA /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
-			};
-		};
 		F21943D12943A67F00CA0826 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
@@ -709,21 +691,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F205FFB2294B65AA003CB1FA /* RxCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F205FFB1294B65AA003CB1FA /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		F205FFB4294B65AA003CB1FA /* RxRelay */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F205FFB1294B65AA003CB1FA /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxRelay;
-		};
-		F205FFB6294B65AA003CB1FA /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F205FFB1294B65AA003CB1FA /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
 		F21943D22943A67F00CA0826 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F21943D12943A67F00CA0826 /* XCRemoteSwiftPackageReference "realm-swift" */;
