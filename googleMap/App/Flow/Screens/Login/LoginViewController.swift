@@ -23,13 +23,14 @@ final class LoginViewController: UIViewController {
 
     // MARK: - Private Properties
 
-    private var presenter: LoginViewOutput?
+    private var presenter: LoginViewOutput
 
     // MARK: - Initialization
 
     init(presenter: LoginViewOutput) {
-        super.init(nibName: nil, bundle: nil)
         self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -48,6 +49,10 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loginView.setupUI()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         viewCheckApiKey()
     }
 }
@@ -90,14 +95,14 @@ extension LoginViewController: LoginViewInput {
 
 extension LoginViewController: LoginViewOutput {
     func viewCheckApiKey() {
-        presenter?.viewCheckApiKey()
+        presenter.viewCheckApiKey()
     }
 
     func viewRequestedRegistration(_ login: String, _ pass: String) {
-        presenter?.viewRequestedRegistration(login, pass)
+        presenter.viewRequestedRegistration(login, pass)
     }
 
     func viewRequestedLogin(_ login: String, _ pass: String) {
-        presenter?.viewRequestedLogin(login, pass)
+        presenter.viewRequestedLogin(login, pass)
     }
 }
