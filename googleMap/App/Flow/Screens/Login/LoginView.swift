@@ -32,7 +32,9 @@ final class LoginView: UIView {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
         field.autocapitalizationType = .none
+        field.delegate = controller
         field.placeholder = "Username"
+        field.returnKeyType = .next
         return field
     }()
 
@@ -40,7 +42,9 @@ final class LoginView: UIView {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
         field.isSecureTextEntry = true
+        field.delegate = controller
         field.placeholder = "Password"
+        field.returnKeyType = .continue
         return field
     }()
 
@@ -59,13 +63,14 @@ final class LoginView: UIView {
 
     // MARK: - Public Properties
 
-    weak var controller: (UIViewController & LoginViewOutput)?
+    weak var controller: (UIViewController & LoginViewOutput & UITextFieldDelegate)?
 
     // MARK: - Initialization
 
-    init(_ controller: UIViewController & LoginViewOutput) {
+    init(_ controller: UIViewController & LoginViewOutput & UITextFieldDelegate) {
         super.init(frame: .zero)
         self.controller = controller
+        addSwipeDismissKeyboard()
     }
 
     required init?(coder: NSCoder) {
@@ -136,7 +141,29 @@ final class LoginView: UIView {
         }
     }
 
+    // MARK: - Public Methods
+
+    func nextResponder(current responder: UIView) -> Bool {
+        guard let index = subviews.firstIndex(where: { $0.isFirstResponder }),
+              index < subviews.endIndex - 1,
+              let nextResponder = subviews[index + 1..<subviews.endIndex].first(where: { $0.canBecomeFirstResponder })
+        else {
+            responder.resignFirstResponder()
+            return false
+        }
+
+        nextResponder.becomeFirstResponder()
+
+        return true
+    }
+
     // MARK: - Private Methods
+
+    private func addSwipeDismissKeyboard() {
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(dismissKeyboardAction))
+        swipeDown.direction = .down
+        addGestureRecognizer(swipeDown)
+    }
 
     /// Checking completeness of the fields, if the fields are filled the button is activated.
     /// - Parameter minimum: Minimum number of characters  in the field.
@@ -181,5 +208,9 @@ final class LoginView: UIView {
         let isFilled = self.checkFilledFields(minimum: 5, login: loginField.text, pass: passField.text)
         submitButton.isEnabled = isFilled
         submitButton.backgroundColor = isFilled ? .gray : .lightGray
+    }
+
+    @objc private func dismissKeyboardAction() {
+        endEditing(false)
     }
 }
