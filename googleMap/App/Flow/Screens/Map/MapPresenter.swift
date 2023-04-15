@@ -17,7 +17,7 @@ enum PathChoice {
 
 protocol MapViewOutput {
     /// View requested start marking route.
-    func viewMarkingRoute(_ on: Bool)
+    func viewMarkingRoute(_ isOn: Bool)
     /// View requested shows traveled Route.
     func viewShowRoute(_ route: PathChoice)
     /// View requested update visable marks
@@ -281,9 +281,9 @@ extension MapPresenter: MapViewOutput {
                                 nextButtonIsEnabled: buttons.next)
     }
 
-    func viewMarkingRoute(_ on: Bool) {
-        isMarkingRoute = on
-        if on {
+    func viewMarkingRoute(_ isOn: Bool) {
+        isMarkingRoute = isOn
+        if isOn {
             tempRoute = RouteModel()
             locationManager.startUpdatingLocation()
         } else {

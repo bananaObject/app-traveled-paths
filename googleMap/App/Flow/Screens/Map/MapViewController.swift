@@ -24,13 +24,14 @@ final class MapViewController: UIViewController {
 
     // MARK: - Private Properties
 
-    private var presenter: MapViewOutput?
+    private var presenter: MapViewOutput
 
     // MARK: - Initialization
 
     init(_ presenter: MapViewOutput) {
-        super.init(nibName: nil, bundle: nil)
         self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -49,7 +50,7 @@ final class MapViewController: UIViewController {
         super.viewDidLoad()
         mapView.setupUI()
         setupNavBar()
-        presenter?.viewDidLoadScreen()
+        presenter.viewDidLoadScreen()
     }
 
     /// Hide navigation bar.
@@ -62,39 +63,35 @@ final class MapViewController: UIViewController {
 
 extension MapViewController: MapViewOutput {
     var routePublisher: AnyPublisher<[CLLocationCoordinate2D], Never> {
-        guard let presenter else { preconditionFailure("lost presenter") }
-        return presenter.routePublisher
+        presenter.routePublisher
     }
 
     var locationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never> {
-        guard let presenter else { preconditionFailure("lost presenter") }
-        return presenter.locationPublisher
+        presenter.locationPublisher
     }
 
     var locationEnabledPublisher: AnyPublisher<Bool, Never> {
-        guard let presenter else { preconditionFailure("lost presenter") }
-        return presenter.locationEnabledPublisher
+        presenter.locationEnabledPublisher
     }
 
     func viewUpdateVisableMarks(_ visableRegion: GMSVisibleRegion) {
-
-        presenter?.viewUpdateVisableMarks(visableRegion)
+        presenter.viewUpdateVisableMarks(visableRegion)
     }
 
     func viewDidLoadScreen() {
-        presenter?.viewDidLoadScreen()
+        presenter.viewDidLoadScreen()
     }
 
     func viewShowLocation() {
-        presenter?.viewShowLocation()
+        presenter.viewShowLocation()
     }
 
     func viewShowRoute(_ path: PathChoice) {
-        presenter?.viewShowRoute(path)
+        presenter.viewShowRoute(path)
     }
 
-    func viewMarkingRoute(_ on: Bool) {
-        presenter?.viewMarkingRoute(on)
+    func viewMarkingRoute(_ isOn: Bool) {
+        presenter.viewMarkingRoute(isOn)
     }
 }
 
@@ -119,6 +116,6 @@ extension MapViewController: MapViewInput {
 
 extension MapViewController: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
-        presenter?.viewUpdateVisableMarks(mapView.projection.visibleRegion())
+        presenter.viewUpdateVisableMarks(mapView.projection.visibleRegion())
     }
 }
