@@ -54,12 +54,14 @@
 ***При первом запуске приложения требуется ввести API-ключ от Google Maps для работы карты. Так как исходный код приложения доступен в открытом репозитории**, не безопасно хранить API-ключ от карт в приложении. Ключ сохраняется в User Defaults, чтобы в последующие запуски приложения не требовался повторный ввод ключа. **Сохранение ключа в User Defaults является мерой для демонстрации функциональности приложения.***
 
 # Технологии
+* Swift
 * UIKit (UI programmatically | Auto Layout)
 * MVP + Coordinator
 * POP + DI
-* Google map + Core location
+* Google map
+* Core location
 * Combine 
-* Realm swift (Database)
+* Realm (Database)
 * Background mode
 * Keychain
 * Local push notification (в качестве примера)
